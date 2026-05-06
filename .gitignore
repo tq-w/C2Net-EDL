@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+outputs/
+*.pth
+*.log
+train_pid.txt
+datasets/ODIR_single_v5_labels.csv
+data/ODIR_crop/
+.idea/
