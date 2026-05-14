@@ -320,7 +320,176 @@ Pre-computed results matching the paper are stored in `results/`:
 | fold_results_odir.csv | ODIR 5-fold CV results |
 | fold_results_mured.csv | MuReD 5-fold CV results |
 
+## Project Structure
+
+```
+C2Net_EDL/
+├── configs/
+│   └── ablation/              # Ablation study configurations
+│       ├── sigmoid_baseline.yaml
+│       ├── evidence_modeling.yaml
+│       ├── asymmetric_weighting.yaml
+│       ├── evidence_scaling.yaml
+│       ├── cyclical_annealing.yaml
+│       └── full_edl.yaml
+├── data/
+│   ├── ODIR_crop/             # ODIR fundus images
+│   └── MuReD/                 # MuReD fundus images
+├── datasets/
+│   ├── ODIR_20class.csv       # ODIR 20-class labels with fold column
+│   ├── MuReD_20class.csv      # MuReD 20-class labels with fold column
+│   └── label_mapping.csv      # Original 30-class mapping
+├── losses/
+│   └── edl_loss.py            # EDL loss functions
+├── models/
+│   ├── head.py                # EDL head (dual-branch Beta evidence)
+│   └── vision_transformer.py  # ViT backbone
+├── scripts/
+│   ├── generate_odir_5fold.py     # Generate ODIR 5-fold splits
+│   ├── generate_mured_5fold.py    # Generate MuReD 5-fold splits
+│   ├── run_ablation.py            # Run ablation studies
+│   ├── run_5fold_cv.py            # Run 5-fold cross-validation
+│   ├── run_hyperparameter_analysis.py  # Hyperparameter sensitivity
+│   ├── run_ood_detection.py       # OOD detection evaluation
+│   └── run_clinical_triage.py     # Clinical triage evaluation
+├── utils/
+│   ├── metrics.py             # Evaluation metrics
+│   └── ...
+├── results/                   # Pre-computed results
+├── config.py                  # Configuration
+├── train.py                   # Main training script
+└── README.md
+```
+
+## MuReD Dataset
+
+MuReD (Multi-label Retinal Disease) dataset contains 2208 images with 20 disease classes.
+
+| Class | Samples | Class | Samples |
+|-------|---------|-------|---------|
+| DR | 495 | CRVO | 55 |
+| NORMAL | 493 | CNV | 60 |
+| MH | 169 | RS | 58 |
+| ODC | 263 | ODE | 57 |
+| TSLN | 156 | LS | 46 |
+| ARMD | 158 | CSR | 36 |
+| DN | 162 | HTR | 35 |
+| MYA | 89 | ASR | 33 |
+| BRVO | 79 | CRS | 30 |
+| ODP | 62 | OTHER | 261 |
+
+### MuReD Data Preparation
+
+```bash
+# MuReD data should be in data/MuReD/ directory
+# Images are named as: {ID}.png (e.g., aria_c_25_1.png)
+
+# Generate 5-fold splits
+python scripts/generate_mured_5fold.py \
+    --train_csv /path/to/mured/train_data.csv \
+    --val_csv /path/to/mured/val_data.csv \
+    --output_csv datasets/MuReD_20class.csv
+```
+
+## Server Deployment
+
+### Environment Setup on Server
+
+```bash
+# SSH to server
+ssh user@server
+
+# Clone repository
+git clone https://github.com/tq-w/C2Net-EDL.git
+cd C2Net-EDL
+
+# Create conda environment
+conda create -n c2net_edl python=3.10 -y
+conda activate c2net_edl
+
+# Install dependencies
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install einops timm pandas scikit-learn PyYAML tensorboard matplotlib packaging munkres
+
+# Update data path in config.py
+# Change '/root/C2Net_EDL/data/ODIR_crop' to your actual path
+```
+
+### Training on Server with GPU
+
+```bash
+# Single GPU training
+CUDA_VISIBLE_DEVICES=0 python train.py --dataset odir --fold 0 --device cuda
+
+# Multi-GPU training (2 GPUs)
+CUDA_VISIBLE_DEVICES=0,1 python train.py --dataset odir --fold 0 --distributed --device cuda
+
+# Background training
+CUDA_VISIBLE_DEVICES=0 nohup python train.py --dataset odir --fold 0 --device cuda > train.log 2>&1 &
+
+# Monitor training
+tail -f outputs/c2net_edl/log.txt
+tensorboard --logdir outputs/c2net_edl/tensorboard --port 6006
+```
+
+### Run Full Experiments
+
+```bash
+# Run 5-fold cross-validation
+for fold in 0 1 2 3 4; do
+    CUDA_VISIBLE_DEVICES=0 python train.py --dataset odir --fold $fold --device cuda --task odir_fold_$fold
+done
+
+# Run ablation studies
+python scripts/run_ablation.py --dataset odir --config_dir configs/ablation/
+
+# Run hyperparameter analysis
+python scripts/run_hyperparameter_analysis.py --dataset odir
+```
+
+## FAQ
+
+### Q: How to use my own dataset?
+
+1. Prepare images in `data/your_dataset/` directory
+2. Create CSV file with columns: `image_name`, `labels` (semicolon-separated indices)
+3. Add `fold` column for 5-fold cross-validation
+4. Update `config.py` with your data paths
+
+### Q: How to change number of classes?
+
+1. Update `num_classes` in `config.py`
+2. Update loss configuration (alpha, gamma, pos_weight arrays)
+3. Update class names in dataset class
+
+### Q: Training loss is negative, is this normal?
+
+Yes! EDL loss can be negative because it uses Digamma functions. The loss should decrease over time.
+
+### Q: How to interpret uncertainty?
+
+- **Low uncertainty (< 0.3)**: Model is confident, prediction is reliable
+- **Medium uncertainty (0.3-0.6)**: Model is less confident, consider manual review
+- **High uncertainty (> 0.6)**: Model is uncertain, recommend specialist consultation
+
+### Q: GPU memory error?
+
+- Reduce `batch_size` in config
+- Use `--accum_iter 2` for gradient accumulation
+- Use mixed precision training (enabled by default)
+
 ## References
 
 - Sensoy et al., "Evidential Deep Learning to Quantify Classification Uncertainty", NeurIPS 2018
 - C2Net: Constraint-Aware Contrastive Learning for Multi-Label Medical Image Classification
+
+## Citation
+
+```bibtex
+@article{c2net_edl,
+  title={C2Net-EDL: Evidential Deep Learning for Long-Tail Multi-Label Medical Image Classification},
+  author={Your Name},
+  journal={Your Journal},
+  year={2025}
+}
+```
