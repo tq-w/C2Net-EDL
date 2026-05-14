@@ -325,10 +325,10 @@ def main(args):
             # Log to file
             log_str = (
                 f"Epoch [{epoch}/{config.training['epochs']}] | "
-                f"Train Loss: {train_stats['loss']:.4f} | "
-                f"Val Loss: {val_stats['loss']:.4f} | "
-                f"Val Score: {score:.4f} | "
-                f"Best Score: {best_score:.4f}\n"
+                f"Train Loss: {train_stats['loss']:.3f} | "
+                f"Val Loss: {val_stats['loss']:.3f} | "
+                f"Val Score: {score:.3f} | "
+                f"Best Score: {best_score:.3f}\n"
             )
             log_file.write(log_str)
             log_file.flush()
@@ -471,11 +471,11 @@ def evaluate_edl(data_loader, model, criterion, device, config, epoch, prefix='v
 
     # Print results
     print(f"{prefix.capitalize()} Results:")
-    print(f"  F1 Score: {metrics['f1_score']:.4f}")
-    print(f"  ROC AUC: {metrics['roc_auc']:.4f}")
-    print(f"  ECE: {metrics['ece']:.4f}")
-    print(f"  Brier Score: {metrics['brier_score']:.4f}")
-    print(f"  Score: {score:.4f}")
+    print(f"  F1 Score: {metrics['f1_score']:.3f}")
+    print(f"  ROC AUC: {metrics['roc_auc']:.3f}")
+    print(f"  ECE: {metrics['ece']:.3f}")
+    print(f"  Brier Score: {metrics['brier_score']:.3f}")
+    print(f"  Score: {score:.3f}")
 
     return {'loss': 0.0}, score  # Loss is not computed in evaluation for simplicity
 

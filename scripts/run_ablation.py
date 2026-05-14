@@ -133,6 +133,12 @@ def run_ablation_study(dataset, config_dir, output_dir, n_folds=5):
     # Save results
     if all_results:
         results_df = pd.DataFrame(all_results)
+        
+        # Round to 3 decimal places
+        results_df['best_score'] = results_df['best_score'].round(3)
+        results_df['train_loss'] = results_df['train_loss'].round(3)
+        results_df['val_loss'] = results_df['val_loss'].round(3)
+        
         results_file = output_dir / f"ablation_results_{dataset}.csv"
         results_df.to_csv(results_file, index=False)
         print(f"\nResults saved to {results_file}")
@@ -149,7 +155,7 @@ def run_ablation_study(dataset, config_dir, output_dir, n_folds=5):
         print("\nConfig - Mean ± Std")
         print("-" * 40)
         for _, row in summary.iterrows():
-            print(f"{row['config']}: {row['mean']:.4f} ± {row['std']:.4f}")
+            print(f"{row['config']}: {row['mean']:.3f} ± {row['std']:.3f}")
     
     return all_results
 

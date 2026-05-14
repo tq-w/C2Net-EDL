@@ -145,6 +145,11 @@ def run_5fold_cv(dataset, config_path, output_dir, n_folds=5):
         
         results_df = pd.concat([results_df, mean_row, std_row], ignore_index=True)
         
+        # Round to 3 decimal places
+        results_df['best_score'] = results_df['best_score'].round(3)
+        results_df['train_loss'] = results_df['train_loss'].round(3)
+        results_df['val_loss'] = results_df['val_loss'].round(3)
+        
         # Save to file
         results_file = output_dir / f"fold_results_{dataset}_{config_name}.csv"
         results_df.to_csv(results_file, index=False)
@@ -156,11 +161,11 @@ def run_5fold_cv(dataset, config_path, output_dir, n_folds=5):
         print("="*60)
         print(f"\nDataset: {dataset}")
         print(f"Config: {config_name}")
-        print(f"\nBest Score: {mean_score:.4f} ± {std_score:.4f}")
+        print(f"\nBest Score: {mean_score:.3f} ± {std_score:.3f}")
         print("\nPer-fold results:")
         for _, row in results_df.iterrows():
             if row['fold'] not in ['mean', 'std']:
-                print(f"  Fold {row['fold']}: {row['best_score']:.4f}")
+                print(f"  Fold {row['fold']}: {row['best_score']:.3f}")
     
     return fold_results
 

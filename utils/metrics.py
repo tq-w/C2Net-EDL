@@ -302,9 +302,9 @@ def log_uncertainty_analysis(results, writer=None, epoch=None, prefix=''):
     # Overall results
     overall = results['overall']
     print(f"Overall:")
-    print(f"  Mean uncertainty (all): {overall['mean_uncertainty_all']:.4f}")
-    print(f"  Mean uncertainty (correct): {overall['mean_uncertainty_correct']:.4f}")
-    print(f"  Mean uncertainty (incorrect): {overall['mean_uncertainty_incorrect']:.4f}")
+    print(f"  Mean uncertainty (all): {overall['mean_uncertainty_all']:.3f}")
+    print(f"  Mean uncertainty (correct): {overall['mean_uncertainty_correct']:.3f}")
+    print(f"  Mean uncertainty (incorrect): {overall['mean_uncertainty_incorrect']:.3f}")
     print(f"  Correct samples: {overall['num_correct']}")
     print(f"  Incorrect samples: {overall['num_incorrect']}")
 
@@ -320,8 +320,8 @@ def log_uncertainty_analysis(results, writer=None, epoch=None, prefix=''):
     for class_key in class_keys[:3]:  # Show first 3 classes
         class_result = results[class_key]
         print(f"\n{class_key}:")
-        print(f"  Mean uncertainty (correct): {class_result['mean_uncertainty_correct']:.4f}")
-        print(f"  Mean uncertainty (incorrect): {class_result['mean_uncertainty_incorrect']:.4f}")
+        print(f"  Mean uncertainty (correct): {class_result['mean_uncertainty_correct']:.3f}")
+        print(f"  Mean uncertainty (incorrect): {class_result['mean_uncertainty_incorrect']:.3f}")
 
 
 if __name__ == '__main__':
