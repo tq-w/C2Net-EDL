@@ -194,14 +194,6 @@ def main(args):
     # Create loss scaler for AMP
     loss_scaler = NativeScalerWithGradNormCount()
 
-    # Load dataset
-    print("Loading dataset...")
-    df = pd.read_csv(config.data['csv_file'])
-
-    # Add split column if not present
-    if 'random_mode' not in df.columns:
-        df = split_dataset(df, seed=config.training['seed'])
-
     # Get normalization stats (ImageNet per paper)
     norm_type = config.data.get('normalization', 'imagenet')
     mean, std = get_normalization_stats(norm_type)
@@ -218,29 +210,68 @@ def main(args):
         std=std
     )
 
-    # Create datasets
-    # For training set, compute class mapping
-    train_dataset = ODIRDatasetEDL(
-        df,
-        root_dir=config.data['root_dir'],
-        mode='train',
-        transform=train_transform,
-        enhance_dir=config.data['enhance_dir'],
-        grade_csv=config.data['grade_csv'] if os.path.exists(config.data['grade_csv']) else None,
-        min_samples=config.data['min_samples']
-    )
+    # Load dataset
+    print("Loading dataset...")
+    dataset_type = getattr(args, 'dataset', 'odir')
+    fold = getattr(args, 'fold', None)
 
-    # Get class mapping from training set for validation set
-    class_map = train_dataset.get_class_map()
+    if dataset_type == 'mured':
+        # MuReD dataset
+        from data.dataset import MuReDDatasetEDL
+        df = pd.read_csv('datasets/MuReD_20class.csv')
+        mured_root = getattr(args, 'data_path', config.data.get('mured_root_dir', '/home/daocp01/wtq/C2Net_EDL/data/MuReD'))
 
-    val_dataset = ODIRDatasetEDL(
-        df,
-        root_dir=config.data['root_dir'],
-        mode='val',
-        transform=eval_transform,
-        min_samples=config.data['min_samples'],
-        class_map=class_map
-    )
+        train_dataset = MuReDDatasetEDL(df, mured_root, mode='train', transform=train_transform, fold=fold)
+        val_dataset = MuReDDatasetEDL(df, mured_root, mode='val', transform=eval_transform, fold=fold)
+        train_dataset.get_class_map = lambda: {i: i for i in range(20)}
+        train_dataset.get_num_classes = lambda: 20
+    else:
+        # ODIR dataset
+        df = pd.read_csv(config.data['csv_file'])
+
+        if fold is not None and 'fold' in df.columns:
+            # Use fold-based splitting
+            train_dataset = ODIRDatasetEDL(
+                df,
+                root_dir=config.data['root_dir'],
+                mode='train',
+                transform=train_transform,
+                enhance_dir=config.data['enhance_dir'],
+                grade_csv=config.data['grade_csv'] if os.path.exists(config.data['grade_csv']) else None,
+                min_samples=config.data['min_samples'],
+                split_column='fold',
+                fold=fold
+            )
+            val_dataset = ODIRDatasetEDL(
+                df,
+                root_dir=config.data['root_dir'],
+                mode='val',
+                transform=eval_transform,
+                min_samples=config.data['min_samples'],
+                split_column='fold',
+                fold=fold
+            )
+        else:
+            # Original random_mode splitting
+            if 'random_mode' not in df.columns:
+                df = split_dataset(df, seed=config.training['seed'])
+            train_dataset = ODIRDatasetEDL(
+                df,
+                root_dir=config.data['root_dir'],
+                mode='train',
+                transform=train_transform,
+                enhance_dir=config.data['enhance_dir'],
+                grade_csv=config.data['grade_csv'] if os.path.exists(config.data['grade_csv']) else None,
+                min_samples=config.data['min_samples']
+            )
+            val_dataset = ODIRDatasetEDL(
+                df,
+                root_dir=config.data['root_dir'],
+                mode='val',
+                transform=eval_transform,
+                min_samples=config.data['min_samples'],
+                class_map=train_dataset.get_class_map()
+            )
 
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Val dataset size: {len(val_dataset)}")

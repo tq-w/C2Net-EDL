@@ -15,6 +15,7 @@ class ODIRDatasetEDL(Dataset):
     """
     ODIR (Ophthalmic Disease Intelligent Recognition) dataset with EDL support.
     Handles the new multi-label format where labels are ';' separated indices.
+    Supports both random_mode and fold-based splitting.
     """
 
     def __init__(
@@ -28,10 +29,25 @@ class ODIRDatasetEDL(Dataset):
         split_column='random_mode',
         unusable_column='unusable',
         min_samples=10,
-        class_map=None
+        class_map=None,
+        fold=None,
+        n_folds=5
     ):
-        # Filter by mode
-        mask = (data_frame[split_column] == mode)
+        # Filter by mode - support both random_mode and fold-based splitting
+        if split_column == 'fold' and fold is not None:
+            # Fold-based splitting: fold N for test, fold (N+1)%5 for val, rest for train
+            val_fold = (fold + 1) % n_folds
+            if mode == 'train':
+                mask = ~data_frame['fold'].isin([fold, val_fold])
+            elif mode == 'val':
+                mask = (data_frame['fold'] == val_fold)
+            elif mode == 'test':
+                mask = (data_frame['fold'] == fold)
+            else:
+                mask = (data_frame[split_column] == mode)
+        else:
+            # Original random_mode splitting
+            mask = (data_frame[split_column] == mode)
         # Check if unusable column exists before filtering
         if unusable_column in data_frame.columns:
             mask &= (data_frame[unusable_column] == 0)
@@ -134,6 +150,75 @@ class ODIRDatasetEDL(Dataset):
     def get_num_classes(self):
         """Return the number of valid classes."""
         return self.num_classes
+
+
+class MuReDDatasetEDL(Dataset):
+    """
+    MuReD dataset for EDL multi-label classification.
+    20 fine-grained classes with multi-column 0/1 format.
+    """
+
+    CLASS_NAMES = [
+        'DR', 'NORMAL', 'MH', 'ODC', 'TSLN', 'ARMD', 'DN', 'MYA',
+        'BRVO', 'ODP', 'CRVO', 'CNV', 'RS', 'ODE', 'LS', 'CSR',
+        'HTR', 'ASR', 'CRS', 'OTHER'
+    ]
+
+    def __init__(
+        self,
+        data_frame,
+        root_dir,
+        mode='train',
+        transform=None,
+        fold=None,
+        n_folds=5
+    ):
+        self.root_dir = root_dir
+        self.transform = transform
+        self.mode = mode
+        self.num_classes = 20
+
+        # Fold-based splitting
+        if fold is not None and 'fold' in data_frame.columns:
+            val_fold = (fold + 1) % n_folds
+            if mode == 'train':
+                mask = ~data_frame['fold'].isin([fold, val_fold])
+            elif mode == 'val':
+                mask = (data_frame['fold'] == val_fold)
+            elif mode == 'test':
+                mask = (data_frame['fold'] == fold)
+            else:
+                mask = pd.Series([True] * len(data_frame))
+        else:
+            mask = pd.Series([True] * len(data_frame))
+
+        self.data_frame = data_frame[mask].copy()
+        self._extract_labels()
+
+    def _extract_labels(self):
+        """Extract multi-hot labels from individual columns."""
+        label_columns = self.CLASS_NAMES
+        self.filtered_labels = self.data_frame[label_columns].values.astype(np.float32)
+
+    def __len__(self):
+        return len(self.data_frame)
+
+    def __getitem__(self, idx):
+        image_name = self.data_frame.iloc[idx]['ID']
+        img_path = os.path.join(self.root_dir, image_name + '.png')
+
+        try:
+            image = Image.open(img_path).convert("RGB")
+        except Exception as e:
+            print(f"Error loading image {img_path}: {e}")
+            image = Image.new('RGB', (256, 256), (0, 0, 0))
+
+        labels = torch.tensor(self.filtered_labels[idx]).float()
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, labels
 
 
 def split_dataset(dataframe, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1, seed=0):

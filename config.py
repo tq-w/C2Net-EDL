@@ -315,6 +315,13 @@ def get_args_parser():
     parser.add_argument('--pin_mem', action='store_true',
                         help='Pin CPU memory in DataLoader')
 
+    # Dataset
+    parser.add_argument('--dataset', default='odir', type=str,
+                        choices=['odir', 'mured'],
+                        help='Dataset to use (odir or mured)')
+    parser.add_argument('--fold', default=None, type=int,
+                        help='Fold number for cross-validation (0-4)')
+
     # Device
     parser.add_argument('--device', default='cuda', type=str,
                         help='Device to use')

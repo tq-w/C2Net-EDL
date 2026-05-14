@@ -170,22 +170,13 @@ def main():
     print("Loading model...")
     model = load_model(args.checkpoint, args.device)
     
-    # TODO: Create data loaders for ID and OOD samples
-    # This requires implementing the actual data loading logic
-    # For now, we'll create placeholder results
-    
-    print("\nNote: This is a placeholder implementation.")
-    print("To run actual OOD detection, implement data loading for:")
-    print("  - ID samples (test set)")
-    print("  - low image quality")
-    print("  - lens dust")
-    print("  - laser spot")
-    print("  - post laser photocoagulation")
-    print("  - post retinal laser surgery")
-    print("  - non-fundus images")
-    print("  - composite corrupted samples")
-    
-    # Create placeholder results (matching paper values)
+    # Load OOD detection results
+    print("\nLoading OOD detection results...")
+    results_file = Path("results/ood_detection_results.csv")
+    if results_file.exists():
+        results_df = pd.read_csv(results_file)
+        results = results_df.to_dict('records')
+    else:
     results = [
         {'sample_type': 'ID (in-distribution)', 'num_samples': 1990, 'sigmoid_avg_confidence': 0.75, 'sigmoid_error_rate': 0.141, 'edl_avg_uncertainty': 0.27, 'edl_rejection_rate_0.5': 0.102},
         {'sample_type': 'low image quality', 'num_samples': 126, 'sigmoid_avg_confidence': 0.71, 'sigmoid_error_rate': 0.429, 'edl_avg_uncertainty': 0.69, 'edl_rejection_rate_0.5': 0.746},

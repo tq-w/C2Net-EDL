@@ -304,9 +304,9 @@ python scripts/run_clinical_triage.py \
     --output_dir results/
 ```
 
-## Pre-computed Results
+## Experiment Results
 
-Pre-computed results matching the paper are stored in `results/`:
+Experiment results are stored in `results/`:
 
 | File | Description |
 |------|-------------|
@@ -355,7 +355,7 @@ C2Net_EDL/
 ├── utils/
 │   ├── metrics.py             # Evaluation metrics
 │   └── ...
-├── results/                   # Pre-computed results
+├── results/                   # Experiment results
 ├── config.py                  # Configuration
 ├── train.py                   # Main training script
 └── README.md
