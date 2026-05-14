@@ -1,0 +1,5 @@
+triage_level,uncertainty_range,case_ratio,ai_sample_accuracy,suggested_handling
+Level 1 (Low),u < 0.3,0.548,0.916,AI initial + Doctor quick review
+Level 2 (Medium),0.3 <= u < 0.6,0.287,0.734,AI assist + Doctor primary
+Level 3 (High),u >= 0.6,0.165,0.389,Specialist consultation + Further examination
+Overall,-,1.0,0.777,-

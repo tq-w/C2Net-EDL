@@ -1,0 +1,34 @@
+# Evidence Modeling Configuration
+# Standard EDL with linear annealing, no asymmetric weighting
+
+model:
+  type: vit_base
+  num_classes: 20
+  finetune: 'https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth'
+
+loss:
+  loss_type: edl_beta
+  alpha: [0.25] * 20
+  gamma: [2.0] * 20
+  pos_weight: [1.0] * 20
+
+edl:
+  kl_annealing_epochs: 20
+  uncertainty_gamma: 1.0
+  contra_weight: 0.0  # No contrastive loss
+  evidence_activation: softplus
+  evidence_scale: 1.0  # No scaling
+  neg_weight: 1.0  # No asymmetric weighting
+  annealing_type: linear
+
+training:
+  epochs: 100
+  batch_size: 32
+  lr: 1e-4
+  warmup_epochs: 10
+  early_stop_patience: 15
+  seed: 0
+
+data:
+  min_samples: 10
+  merge_tail_classes: false

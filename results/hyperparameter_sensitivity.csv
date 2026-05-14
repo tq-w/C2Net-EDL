@@ -1,0 +1,16 @@
+parameter,value,AF1,ECE,BS
+evidence_scale,1.0,0.621,0.142,0.195
+evidence_scale,5.0,0.638,0.112,0.178
+evidence_scale,10.0,0.648,0.098,0.169
+evidence_scale,15.0,0.645,0.101,0.171
+evidence_scale,20.0,0.642,0.105,0.174
+neg_weight,0.1,0.641,0.103,0.173
+neg_weight,0.2,0.648,0.098,0.169
+neg_weight,0.3,0.644,0.102,0.172
+neg_weight,0.5,0.638,0.108,0.176
+neg_weight,1.0,0.631,0.121,0.188
+uncertainty_gamma,0.5,0.642,0.104,0.173
+uncertainty_gamma,1.0,0.648,0.098,0.169
+uncertainty_gamma,1.5,0.647,0.099,0.170
+uncertainty_gamma,2.0,0.646,0.100,0.171
+uncertainty_gamma,3.0,0.644,0.102,0.172

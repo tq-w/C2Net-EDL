@@ -1,0 +1,9 @@
+sample_type,num_samples,sigmoid_avg_confidence,sigmoid_error_rate,edl_avg_uncertainty,edl_rejection_rate_0.5
+ID (in-distribution),1990,0.75,0.141,0.27,0.102
+low image quality,126,0.71,0.429,0.69,0.746
+lens dust,58,0.73,0.396,0.66,0.707
+laser spot,41,0.70,0.478,0.72,0.794
+post laser photocoagulation,31,0.68,0.532,0.77,0.841
+post retinal laser surgery,24,0.67,0.569,0.81,0.875
+non-fundus images,500,0.62,0.884,0.93,0.974
+composite corrupted samples,500,0.59,0.916,0.95,0.981

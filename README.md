@@ -216,6 +216,110 @@ with torch.no_grad():
     predictions = (prob >= 0.5).float()
 ```
 
+## 5-Fold Cross-Validation
+
+### Generate 5-Fold Splits
+
+```bash
+# Generate ODIR 5-fold splits (patient-level)
+python scripts/generate_odir_5fold.py \
+    --input_csv /tmp/ODIR_20class_server.csv \
+    --output_csv datasets/ODIR_20class.csv \
+    --n_folds 5 \
+    --seed 42
+
+# Generate MuReD 5-fold splits (patient-level)
+python scripts/generate_mured_5fold.py \
+    --train_csv /path/to/DataProcess/mured/train_data.csv \
+    --val_csv /path/to/DataProcess/mured/val_data.csv \
+    --output_csv datasets/MuReD_20class.csv \
+    --n_folds 5 \
+    --seed 42
+```
+
+### Run 5-Fold Cross-Validation
+
+```bash
+# Run 5-fold CV for ODIR
+python scripts/run_5fold_cv.py \
+    --dataset odir \
+    --config configs/full_edl.yaml \
+    --output_dir results/
+
+# Run 5-fold CV for MuReD
+python scripts/run_5fold_cv.py \
+    --dataset mured \
+    --config configs/full_edl.yaml \
+    --output_dir results/
+```
+
+## Ablation Studies
+
+### Configuration Files
+
+Ablation configurations are stored in `configs/ablation/`:
+
+| Configuration | Loss Type | neg_weight | evidence_scale | annealing_type | contra_weight |
+|---------------|-----------|------------|----------------|----------------|---------------|
+| sigmoid_baseline.yaml | bce | - | - | - | 0 |
+| evidence_modeling.yaml | edl_beta | 1.0 | 1.0 | linear | 0 |
+| asymmetric_weighting.yaml | edl_beta | 0.2 | 1.0 | linear | 0 |
+| evidence_scaling.yaml | edl_beta | 0.2 | 10.0 | linear | 0 |
+| cyclical_annealing.yaml | edl_beta | 0.2 | 10.0 | cyclical | 0 |
+| full_edl.yaml | edl_beta | 0.2 | 10.0 | cyclical | 0.1 |
+
+### Run Ablation Studies
+
+```bash
+# Run all ablation configurations
+python scripts/run_ablation.py \
+    --dataset odir \
+    --config_dir configs/ablation/ \
+    --output_dir results/
+```
+
+## Evaluation Scripts
+
+### Hyperparameter Sensitivity Analysis
+
+```bash
+python scripts/run_hyperparameter_analysis.py \
+    --dataset odir \
+    --output_dir results/
+```
+
+### OOD Detection Evaluation
+
+```bash
+python scripts/run_ood_detection.py \
+    --checkpoint outputs/c2net_edl/checkpoint-best.pth \
+    --output_dir results/
+```
+
+### Clinical Triage Evaluation
+
+```bash
+python scripts/run_clinical_triage.py \
+    --checkpoint outputs/c2net_edl/checkpoint-best.pth \
+    --output_dir results/
+```
+
+## Pre-computed Results
+
+Pre-computed results matching the paper are stored in `results/`:
+
+| File | Description |
+|------|-------------|
+| odir_main_results.csv | ODIR main experiment results (Table 4.3) |
+| mured_main_results.csv | MuReD main experiment results (Table 4.4) |
+| ablation_results.csv | Ablation study results (Table 4.5) |
+| per_class_performance.csv | Per-class performance comparison (Table 4.6) |
+| ood_detection_results.csv | OOD detection results (Table 4.7) |
+| clinical_triage_results.csv | Clinical triage results (Table 4.8) |
+| hyperparameter_sensitivity.csv | Hyperparameter sensitivity analysis (Figure 4.7) |
+| fold_results_odir.csv | ODIR 5-fold CV results |
+| fold_results_mured.csv | MuReD 5-fold CV results |
+
 ## References
 
 - Sensoy et al., "Evidential Deep Learning to Quantify Classification Uncertainty", NeurIPS 2018
