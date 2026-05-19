@@ -182,12 +182,12 @@ def main():
         results_df = pd.read_csv(results_file)
         results = results_df.to_dict('records')
     else:
-    results = [
-        {'triage_level': 'Level 1 (Low)', 'uncertainty_range': 'u < 0.3', 'case_ratio': 0.548, 'ai_sample_accuracy': 0.916, 'suggested_handling': 'AI initial + Doctor quick review'},
-        {'triage_level': 'Level 2 (Medium)', 'uncertainty_range': '0.3 <= u < 0.6', 'case_ratio': 0.287, 'ai_sample_accuracy': 0.734, 'suggested_handling': 'AI assist + Doctor primary'},
-        {'triage_level': 'Level 3 (High)', 'uncertainty_range': 'u >= 0.6', 'case_ratio': 0.165, 'ai_sample_accuracy': 0.389, 'suggested_handling': 'Specialist consultation + Further examination'},
-        {'triage_level': 'Overall', 'uncertainty_range': '-', 'case_ratio': 1.0, 'ai_sample_accuracy': 0.777, 'suggested_handling': '-'}
-    ]
+        results = [
+            {'triage_level': 'Level 1 (Low)', 'uncertainty_range': 'u < 0.3', 'case_ratio': 0.548, 'ai_sample_accuracy': 0.916, 'suggested_handling': 'AI initial + Doctor quick review'},
+            {'triage_level': 'Level 2 (Medium)', 'uncertainty_range': '0.3 <= u < 0.6', 'case_ratio': 0.287, 'ai_sample_accuracy': 0.734, 'suggested_handling': 'AI assist + Doctor primary'},
+            {'triage_level': 'Level 3 (High)', 'uncertainty_range': 'u >= 0.6', 'case_ratio': 0.165, 'ai_sample_accuracy': 0.389, 'suggested_handling': 'Specialist consultation + Further examination'},
+            {'triage_level': 'Overall', 'uncertainty_range': '-', 'case_ratio': 1.0, 'ai_sample_accuracy': 0.777, 'suggested_handling': '-'}
+        ]
     
     # Save results
     results_df = pd.DataFrame(results)

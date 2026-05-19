@@ -177,16 +177,16 @@ def main():
         results_df = pd.read_csv(results_file)
         results = results_df.to_dict('records')
     else:
-    results = [
-        {'sample_type': 'ID (in-distribution)', 'num_samples': 1990, 'sigmoid_avg_confidence': 0.75, 'sigmoid_error_rate': 0.141, 'edl_avg_uncertainty': 0.27, 'edl_rejection_rate_0.5': 0.102},
-        {'sample_type': 'low image quality', 'num_samples': 126, 'sigmoid_avg_confidence': 0.71, 'sigmoid_error_rate': 0.429, 'edl_avg_uncertainty': 0.69, 'edl_rejection_rate_0.5': 0.746},
-        {'sample_type': 'lens dust', 'num_samples': 58, 'sigmoid_avg_confidence': 0.73, 'sigmoid_error_rate': 0.396, 'edl_avg_uncertainty': 0.66, 'edl_rejection_rate_0.5': 0.707},
-        {'sample_type': 'laser spot', 'num_samples': 41, 'sigmoid_avg_confidence': 0.70, 'sigmoid_error_rate': 0.478, 'edl_avg_uncertainty': 0.72, 'edl_rejection_rate_0.5': 0.794},
-        {'sample_type': 'post laser photocoagulation', 'num_samples': 31, 'sigmoid_avg_confidence': 0.68, 'sigmoid_error_rate': 0.532, 'edl_avg_uncertainty': 0.77, 'edl_rejection_rate_0.5': 0.841},
-        {'sample_type': 'post retinal laser surgery', 'num_samples': 24, 'sigmoid_avg_confidence': 0.67, 'sigmoid_error_rate': 0.569, 'edl_avg_uncertainty': 0.81, 'edl_rejection_rate_0.5': 0.875},
-        {'sample_type': 'non-fundus images', 'num_samples': 500, 'sigmoid_avg_confidence': 0.62, 'sigmoid_error_rate': 0.884, 'edl_avg_uncertainty': 0.93, 'edl_rejection_rate_0.5': 0.974},
-        {'sample_type': 'composite corrupted samples', 'num_samples': 500, 'sigmoid_avg_confidence': 0.59, 'sigmoid_error_rate': 0.916, 'edl_avg_uncertainty': 0.95, 'edl_rejection_rate_0.5': 0.981}
-    ]
+        results = [
+            {'sample_type': 'ID (in-distribution)', 'num_samples': 1990, 'sigmoid_avg_confidence': 0.75, 'sigmoid_error_rate': 0.141, 'edl_avg_uncertainty': 0.27, 'edl_rejection_rate_0.5': 0.102},
+            {'sample_type': 'low image quality', 'num_samples': 126, 'sigmoid_avg_confidence': 0.71, 'sigmoid_error_rate': 0.429, 'edl_avg_uncertainty': 0.69, 'edl_rejection_rate_0.5': 0.746},
+            {'sample_type': 'lens dust', 'num_samples': 58, 'sigmoid_avg_confidence': 0.73, 'sigmoid_error_rate': 0.396, 'edl_avg_uncertainty': 0.66, 'edl_rejection_rate_0.5': 0.707},
+            {'sample_type': 'laser spot', 'num_samples': 41, 'sigmoid_avg_confidence': 0.70, 'sigmoid_error_rate': 0.478, 'edl_avg_uncertainty': 0.72, 'edl_rejection_rate_0.5': 0.794},
+            {'sample_type': 'post laser photocoagulation', 'num_samples': 31, 'sigmoid_avg_confidence': 0.68, 'sigmoid_error_rate': 0.532, 'edl_avg_uncertainty': 0.77, 'edl_rejection_rate_0.5': 0.841},
+            {'sample_type': 'post retinal laser surgery', 'num_samples': 24, 'sigmoid_avg_confidence': 0.67, 'sigmoid_error_rate': 0.569, 'edl_avg_uncertainty': 0.81, 'edl_rejection_rate_0.5': 0.875},
+            {'sample_type': 'non-fundus images', 'num_samples': 500, 'sigmoid_avg_confidence': 0.62, 'sigmoid_error_rate': 0.884, 'edl_avg_uncertainty': 0.93, 'edl_rejection_rate_0.5': 0.974},
+            {'sample_type': 'composite corrupted samples', 'num_samples': 500, 'sigmoid_avg_confidence': 0.59, 'sigmoid_error_rate': 0.916, 'edl_avg_uncertainty': 0.95, 'edl_rejection_rate_0.5': 0.981}
+        ]
     
     # Save results
     results_df = pd.DataFrame(results)

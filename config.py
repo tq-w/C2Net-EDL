@@ -44,7 +44,7 @@ class Config:
 
         # Data configuration
         self.data = {
-            'root_dir': '/root/C2Net_EDL/data/ODIR_crop',
+            'root_dir': '/home/daocp01/wtq/C2Net_EDL/data/ODIR_crop',
             'csv_file': 'datasets/ODIR_20class.csv',
             'grade_csv': 'datasets/ODIR_eyeQ_new.csv',
             'enhance_dir': None,  # Optional: path to enhanced images
